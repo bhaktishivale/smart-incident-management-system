@@ -1,0 +1,897 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard | Smart Incident Management System</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+    <style>
+        :root {
+            --sidebar-width: 260px;
+            --primary-blue: #0d6efd;
+            --dark-blue: #0a58ca;
+            --sidebar-bg: #0a1628;
+            --sidebar-hover: #152238;
+            --topbar-height: 64px;
+        }
+
+        body {
+            font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
+            background: #f0f4f8;
+            min-height: 100vh;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: var(--sidebar-width);
+            height: 100vh;
+            background: var(--sidebar-bg);
+            color: rgba(255, 255, 255, 0.85);
+            z-index: 1040;
+            transition: transform 0.3s ease;
+            overflow-y: auto;
+        }
+
+        .sidebar-brand {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            padding: 1.25rem 1.5rem;
+            font-weight: 700;
+            font-size: 1.1rem;
+            color: #fff;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            text-decoration: none;
+        }
+
+        .sidebar-brand i {
+            font-size: 1.5rem;
+            color: var(--primary-blue);
+        }
+
+        .sidebar-nav {
+            padding: 1rem 0.75rem;
+        }
+
+        .sidebar-nav .nav-link {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.7rem 1rem;
+            color: rgba(255, 255, 255, 0.65);
+            border-radius: 8px;
+            font-weight: 500;
+            transition: all 0.2s ease;
+            margin-bottom: 0.25rem;
+        }
+
+        .sidebar-nav .nav-link i {
+            font-size: 1.15rem;
+            width: 22px;
+            text-align: center;
+        }
+
+        .sidebar-nav .nav-link:hover,
+        .sidebar-nav .nav-link.active {
+            background: var(--sidebar-hover);
+            color: #fff;
+        }
+
+        .sidebar-nav .nav-link.active {
+            background: var(--primary-blue);
+        }
+
+        .sidebar-section-label {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: rgba(255, 255, 255, 0.35);
+            padding: 1rem 1rem 0.5rem;
+            font-weight: 600;
+        }
+
+        /* Main layout */
+        .main-wrapper {
+            margin-left: var(--sidebar-width);
+            min-height: 100vh;
+            transition: margin-left 0.3s ease;
+        }
+
+        /* Top navbar */
+        .top-navbar {
+            height: var(--topbar-height);
+            background: #fff;
+            border-bottom: 1px solid #e2e8f0;
+            padding: 0 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 1030;
+        }
+
+        .top-navbar .page-title {
+            font-weight: 700;
+            font-size: 1.15rem;
+            margin: 0;
+            color: #1e293b;
+        }
+
+        .top-navbar .search-box {
+            position: relative;
+            max-width: 320px;
+            width: 100%;
+        }
+
+        .top-navbar .search-box i {
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #94a3b8;
+        }
+
+        .top-navbar .search-box input {
+            padding-left: 2.25rem;
+            border-radius: 50px;
+            border: 1px solid #e2e8f0;
+            background: #f8fafc;
+            font-size: 0.875rem;
+        }
+
+        .top-navbar .search-box input:focus {
+            background: #fff;
+            border-color: var(--primary-blue);
+            box-shadow: 0 0 0 3px rgba(13, 110, 253, 0.1);
+        }
+
+        .user-avatar {
+            width: 38px;
+            height: 38px;
+            background: linear-gradient(135deg, var(--primary-blue), var(--dark-blue));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            font-weight: 600;
+            font-size: 0.875rem;
+        }
+
+        .sidebar-toggle {
+            display: none;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: #475569;
+            padding: 0;
+        }
+
+        /* Content */
+        .dashboard-content {
+            padding: 1.5rem;
+        }
+
+        /* Stat cards */
+        .stat-card {
+            background: #fff;
+            border-radius: 12px;
+            padding: 1.25rem 1.5rem;
+            border: 1px solid #e2e8f0;
+            height: 100%;
+            transition: box-shadow 0.3s ease, transform 0.3s ease;
+        }
+
+        .stat-card:hover {
+            box-shadow: 0 8px 24px rgba(13, 110, 253, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .stat-card .stat-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+        }
+
+        .stat-card .stat-value {
+            font-size: 1.75rem;
+            font-weight: 800;
+            color: #1e293b;
+            line-height: 1;
+        }
+
+        .stat-card .stat-label {
+            color: #64748b;
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+
+        .stat-card .stat-trend {
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .stat-icon-blue { background: #e7f1ff; color: var(--primary-blue); }
+        .stat-icon-orange { background: #fff3e0; color: #f59e0b; }
+        .stat-icon-green { background: #ecfdf5; color: #10b981; }
+        .stat-icon-red { background: #fef2f2; color: #ef4444; }
+
+        /* Cards */
+        .dashboard-card {
+            background: #fff;
+            border-radius: 12px;
+            border: 1px solid #e2e8f0;
+            height: 100%;
+        }
+
+        .dashboard-card .card-header {
+            background: transparent;
+            border-bottom: 1px solid #e2e8f0;
+            padding: 1rem 1.25rem;
+            font-weight: 700;
+            color: #1e293b;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .dashboard-card .card-body {
+            padding: 1.25rem;
+        }
+
+        /* Table */
+        .incidents-table {
+            font-size: 0.875rem;
+        }
+
+        .incidents-table thead th {
+            background: #f8fafc;
+            color: #64748b;
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.7rem;
+            letter-spacing: 0.05em;
+            border-bottom: 1px solid #e2e8f0;
+            padding: 0.75rem 1rem;
+        }
+
+        .incidents-table tbody td {
+            padding: 0.85rem 1rem;
+            vertical-align: middle;
+            border-bottom: 1px solid #f1f5f9;
+        }
+
+        .incidents-table tbody tr:hover {
+            background: #f8fafc;
+        }
+
+        .badge-status {
+            font-size: 0.7rem;
+            font-weight: 600;
+            padding: 0.35em 0.75em;
+            border-radius: 50px;
+        }
+
+        .badge-open { background: #fff3e0; color: #d97706; }
+        .badge-resolved { background: #ecfdf5; color: #059669; }
+        .badge-critical { background: #fef2f2; color: #dc2626; }
+        .badge-in-progress { background: #e7f1ff; color: #2563eb; }
+
+        .badge-priority-high { background: #fef2f2; color: #dc2626; }
+        .badge-priority-medium { background: #fff3e0; color: #d97706; }
+        .badge-priority-low { background: #f1f5f9; color: #64748b; }
+
+        /* Timeline */
+        .activity-timeline {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .activity-timeline li {
+            display: flex;
+            gap: 1rem;
+            padding-bottom: 1.25rem;
+            position: relative;
+        }
+
+        .activity-timeline li:not(:last-child)::before {
+            content: "";
+            position: absolute;
+            left: 15px;
+            top: 32px;
+            bottom: 0;
+            width: 2px;
+            background: #e2e8f0;
+        }
+
+        .activity-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.85rem;
+            flex-shrink: 0;
+            z-index: 1;
+        }
+
+        .activity-icon-blue { background: #e7f1ff; color: var(--primary-blue); }
+        .activity-icon-green { background: #ecfdf5; color: #10b981; }
+        .activity-icon-orange { background: #fff3e0; color: #f59e0b; }
+        .activity-icon-red { background: #fef2f2; color: #ef4444; }
+
+        .activity-content p {
+            margin-bottom: 0.15rem;
+            font-size: 0.875rem;
+            color: #334155;
+        }
+
+        .activity-content small {
+            color: #94a3b8;
+            font-size: 0.75rem;
+        }
+
+        /* Quick actions */
+        .quick-action-btn {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            padding: 1.25rem 0.75rem;
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+            background: #fff;
+            color: #334155;
+            text-decoration: none;
+            font-size: 0.8rem;
+            font-weight: 600;
+            transition: all 0.25s ease;
+            height: 100%;
+        }
+
+        .quick-action-btn i {
+            font-size: 1.5rem;
+            color: var(--primary-blue);
+        }
+
+        .quick-action-btn:hover {
+            background: var(--primary-blue);
+            border-color: var(--primary-blue);
+            color: #fff;
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(13, 110, 253, 0.25);
+        }
+
+        .quick-action-btn:hover i {
+            color: #fff;
+        }
+
+        /* Sidebar overlay (mobile) */
+        .sidebar-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1035;
+        }
+
+        .sidebar-overlay.show {
+            display: block;
+        }
+
+        /* Responsive */
+        @media (max-width: 991.98px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+
+            .sidebar.show {
+                transform: translateX(0);
+            }
+
+            .main-wrapper {
+                margin-left: 0;
+            }
+
+            .sidebar-toggle {
+                display: block;
+            }
+
+            .top-navbar .search-box {
+                display: none;
+            }
+        }
+
+        @media (max-width: 575.98px) {
+            .dashboard-content {
+                padding: 1rem;
+            }
+
+            .stat-card .stat-value {
+                font-size: 1.4rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Sidebar Overlay -->
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+    <!-- Left Sidebar -->
+    <aside class="sidebar" id="sidebar">
+        <a href="{% url 'home' %}" class="sidebar-brand">
+            <i class="bi bi-shield-check"></i>
+            SIMS Dashboard
+        </a>
+        <nav class="sidebar-nav">
+            <div class="sidebar-section-label">Main</div>
+            <a href="{% url 'dashboard' %}" class="nav-link active">
+                <i class="bi bi-speedometer2"></i> Dashboard
+            </a>
+            <a href="{% url 'incident_list' %}" class="nav-link">
+                <i class="bi bi-bug"></i> Incidents
+            </a>
+            <a href="#" class="nav-link">
+                <i class="bi bi-database"></i> SQL Management
+            </a>
+            <a href="#" class="nav-link">
+                <i class="bi bi-activity"></i> Monitoring
+            </a>
+
+            <div class="sidebar-section-label">Tools</div>
+            <a href="#" class="nav-link">
+                <i class="bi bi-graph-up"></i> Reports
+            </a>
+            <a href="#" class="nav-link">
+                <i class="bi bi-bell"></i> Alerts
+            </a>
+            <a href="#" class="nav-link">
+                <i class="bi bi-gear"></i> Settings
+            </a>
+
+            <div class="sidebar-section-label">Account</div>
+            {% if user.is_authenticated %}
+            <div class="nav-link text-muted">
+                <i class="bi bi-person-circle"></i> {{ user.username }}
+            </div>
+            <a href="{% url 'logout' %}" class="nav-link">
+                <i class="bi bi-box-arrow-right"></i> Logout
+            </a>
+            {% else %}
+            <a href="{% url 'login' %}" class="nav-link">
+                <i class="bi bi-box-arrow-in-right"></i> Login
+            </a>
+            {% endif %}
+            <a href="{% url 'home' %}#contact" class="nav-link">
+                <i class="bi bi-envelope"></i> Contact
+            </a>
+        </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <div class="main-wrapper">
+        <!-- Top Navbar -->
+        <header class="top-navbar">
+            <div class="d-flex align-items-center gap-3">
+                <button class="sidebar-toggle" id="sidebarToggle" aria-label="Toggle sidebar">
+                    <i class="bi bi-list"></i>
+                </button>
+                <h1 class="page-title">Dashboard</h1>
+            </div>
+            <div class="d-flex align-items-center gap-3">
+                <div class="search-box d-none d-md-block">
+                    <i class="bi bi-search"></i>
+                    <input type="text" class="form-control form-control-sm" placeholder="Search incidents...">
+                </div>
+                <button class="btn btn-light btn-sm position-relative">
+                    <i class="bi bi-bell"></i>
+                    <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="font-size: 0.6rem;">
+                        3
+                    </span>
+                </button>
+                {% if user.is_authenticated %}
+                <div class="user-avatar" title="{{ user.username }}">{{ user.username|slice:":1"|upper }}</div>
+                {% else %}
+                <a href="{% url 'login' %}" class="btn btn-primary btn-sm">
+                    <i class="bi bi-box-arrow-in-right me-1"></i>Login
+                </a>
+                {% endif %}
+            </div>
+        </header>
+
+        <!-- Dashboard Content -->
+        <main class="dashboard-content">
+            <!-- Critical Incidents Alert -->
+            {% if critical_incidents %}
+            <div class="alert alert-danger alert-dismissible fade show mb-4" role="alert">
+                <div class="d-flex align-items-start">
+                    <i class="bi bi-exclamation-triangle-fill fs-4 me-3"></i>
+                    <div class="flex-grow-1">
+                        <h6 class="alert-heading mb-2">
+                            <i class="bi bi-lightning-charge-fill me-1"></i>
+                            Critical Incidents Require Attention
+                        </h6>
+                        <p class="mb-2 small">{{ critical_incidents|length }} critical incident{{ critical_incidents|length|pluralize }} need{{ critical_incidents|length|pluralize:"s," }} immediate action.</p>
+                        <ul class="mb-0 small">
+                            {% for incident in critical_incidents %}
+                            <li class="mb-1">
+                                <strong>{{ incident.incident_id }}</strong>: {{ incident.title }}
+                                <span class="text-muted">- {{ incident.assigned_engineer }}</span>
+                            </li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+            {% endif %}
+
+            <!-- Stat Cards -->
+            <div class="row g-3 g-lg-4 mb-4">
+                <div class="col-sm-6 col-xl-3">
+                    <div class="stat-card">
+                        <div class="d-flex justify-content-between align-items-start mb-3">
+                            <div class="stat-icon stat-icon-blue">
+                                <i class="bi bi-collection-fill"></i>
+                            </div>
+                            <span class="stat-trend text-success">
+                                <i class="bi bi-arrow-up-short"></i> 12%
+                            </span>
+                        </div>
+                        <div class="stat-value">{{ stats.total }}</div>
+                        <div class="stat-label">Total Incidents</div>
+                    </div>
+                </div>
+                <div class="col-sm-6 col-xl-3">
+                    <div class="stat-card">
+                        <div class="d-flex justify-content-between align-items-start mb-3">
+                            <div class="stat-icon stat-icon-orange">
+                                <i class="bi bi-exclamation-circle-fill"></i>
+                            </div>
+                            <span class="stat-trend text-warning">
+                                <i class="bi bi-dash"></i> 3%
+                            </span>
+                        </div>
+                        <div class="stat-value">{{ stats.open }}</div>
+                        <div class="stat-label">Open</div>
+                    </div>
+                </div>
+                <div class="col-sm-6 col-xl-3">
+                    <div class="stat-card">
+                        <div class="d-flex justify-content-between align-items-start mb-3">
+                            <div class="stat-icon stat-icon-green">
+                                <i class="bi bi-check-circle-fill"></i>
+                            </div>
+                            <span class="stat-trend text-success">
+                                <i class="bi bi-arrow-up-short"></i> 8%
+                            </span>
+                        </div>
+                        <div class="stat-value">{{ stats.resolved }}</div>
+                        <div class="stat-label">Resolved</div>
+                    </div>
+                </div>
+                <div class="col-sm-6 col-xl-3">
+                    <div class="stat-card">
+                        <div class="d-flex justify-content-between align-items-start mb-3">
+                            <div class="stat-icon stat-icon-red">
+                                <i class="bi bi-lightning-charge-fill"></i>
+                            </div>
+                            <span class="stat-trend text-danger">
+                                <i class="bi bi-arrow-down-short"></i> 5%
+                            </span>
+                        </div>
+                        <div class="stat-value">{{ stats.critical }}</div>
+                        <div class="stat-label">Critical</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Charts Row -->
+            <div class="row g-3 g-lg-4 mb-4">
+                <!-- Pie Chart -->
+                <div class="col-lg-6">
+                    <div class="dashboard-card">
+                        <div class="card-header">
+                            <span><i class="bi bi-pie-chart me-2"></i>Open vs Resolved</span>
+                        </div>
+                        <div class="card-body">
+                            <div style="height: 300px; position: relative;">
+                                <canvas id="statusPieChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Bar Chart -->
+                <div class="col-lg-6">
+                    <div class="dashboard-card">
+                        <div class="card-header">
+                            <span><i class="bi bi-bar-chart me-2"></i>Incidents by Priority</span>
+                        </div>
+                        <div class="card-body">
+                            <div style="height: 300px; position: relative;">
+                                <canvas id="priorityBarChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row g-3 g-lg-4">
+                <!-- Recent Incidents Table -->
+                <div class="col-lg-8">
+                    <div class="dashboard-card">
+                        <div class="card-header">
+                            <span><i class="bi bi-table me-2"></i>Recent Incidents</span>
+                            <a href="{% url 'incident_list' %}" class="btn btn-sm btn-outline-primary">View All</a>
+                        </div>
+                        <div class="card-body p-0">
+                            <div class="table-responsive">
+                                <table class="table incidents-table mb-0">
+                                    <thead>
+                                        <tr>
+                                            <th>ID</th>
+                                            <th>Title</th>
+                                            <th>Status</th>
+                                            <th>Priority</th>
+                                            <th>Assigned To</th>
+                                            <th>Date</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for incident in recent_incidents %}
+                                        <tr>
+                                            <td><strong>#{{ incident.pk }}</strong></td>
+                                            <td>{{ incident.title }}</td>
+                                            <td>
+                                                <span class="badge badge-status badge-{{ incident.status_class }}">
+                                                    {{ incident.get_status_display }}
+                                                </span>
+                                            </td>
+                                            <td>
+                                                <span class="badge badge-status badge-priority-{{ incident.priority_class }}">
+                                                    {{ incident.get_priority_display }}
+                                                </span>
+                                            </td>
+                                            <td>{{ incident.assigned_engineer }}</td>
+                                            <td class="text-muted">{{ incident.created_date|date:"M d, Y" }}</td>
+                                        </tr>
+                                        {% empty %}
+                                        <tr>
+                                            <td colspan="6" class="text-center text-muted py-4">No incidents yet.</td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recent Activity Timeline -->
+                <div class="col-lg-4">
+                    <div class="dashboard-card">
+                        <div class="card-header">
+                            <span><i class="bi bi-clock-history me-2"></i>Recent Activity</span>
+                        </div>
+                        <div class="card-body">
+                            <ul class="activity-timeline">
+                                {% for activity in recent_activity %}
+                                <li>
+                                    <div class="activity-icon activity-icon-{{ activity.icon_class }}">
+                                        <i class="bi bi-{{ activity.icon }}"></i>
+                                    </div>
+                                    <div class="activity-content">
+                                        <p>{{ activity.message }}</p>
+                                        <small>{{ activity.time }}</small>
+                                    </div>
+                                </li>
+                                {% endfor %}
+                                {% if not recent_activity %}
+                                <li class="text-muted ps-2">No recent activity.</li>
+                                {% endif %}
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Actions -->
+            <div class="row g-3 g-lg-4 mt-1">
+                <div class="col-12">
+                    <div class="dashboard-card">
+                        <div class="card-header">
+                            <span><i class="bi bi-lightning-fill me-2"></i>Quick Actions</span>
+                        </div>
+                        <div class="card-body">
+                            <div class="row g-3">
+                                <div class="col-6 col-md-4 col-lg-2">
+                                    <a href="{% url 'incident_create' %}" class="quick-action-btn">
+                                        <i class="bi bi-plus-circle"></i>
+                                        Add Incident
+                                    </a>
+                                </div>
+                                <div class="col-6 col-md-4 col-lg-2">
+                                    <a href="{% url 'incident_list' %}" class="quick-action-btn">
+                                        <i class="bi bi-list-ul"></i>
+                                        View All Incidents
+                                    </a>
+                                </div>
+                                <div class="col-6 col-md-4 col-lg-2">
+                                    <a href="#" class="quick-action-btn">
+                                        <i class="bi bi-file-earmark-bar-graph"></i>
+                                        Run Report
+                                    </a>
+                                </div>
+                                <div class="col-6 col-md-4 col-lg-2">
+                                    <a href="#" class="quick-action-btn">
+                                        <i class="bi bi-bell"></i>
+                                        Set Alert
+                                    </a>
+                                </div>
+                                <div class="col-6 col-md-4 col-lg-2">
+                                    <a href="#" class="quick-action-btn">
+                                        <i class="bi bi-people"></i>
+                                        Assign Team
+                                    </a>
+                                </div>
+                                <div class="col-6 col-md-4 col-lg-2">
+                                    <a href="#" class="quick-action-btn">
+                                        <i class="bi bi-download"></i>
+                                        Export Data
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const sidebar = document.getElementById("sidebar");
+            const overlay = document.getElementById("sidebarOverlay");
+            const toggle = document.getElementById("sidebarToggle");
+
+            function openSidebar() {
+                sidebar.classList.add("show");
+                overlay.classList.add("show");
+            }
+
+            function closeSidebar() {
+                sidebar.classList.remove("show");
+                overlay.classList.remove("show");
+            }
+
+            toggle.addEventListener("click", function () {
+                sidebar.classList.contains("show") ? closeSidebar() : openSidebar();
+            });
+
+            overlay.addEventListener("click", closeSidebar);
+
+            window.addEventListener("resize", function () {
+                if (window.innerWidth >= 992) {
+                    closeSidebar();
+                }
+            });
+
+            // Initialize Charts
+            const statusPieCtx = document.getElementById('statusPieChart');
+            const priorityBarCtx = document.getElementById('priorityBarChart');
+
+            if (statusPieCtx) {
+                new Chart(statusPieCtx, {
+                    type: 'pie',
+                    data: {
+                        labels: {{ chart_data.status_pie.labels|safe }},
+                        datasets: [{
+                            data: {{ chart_data.status_pie.data|safe }},
+                            backgroundColor: {{ chart_data.status_pie.colors|safe }},
+                            borderWidth: 2,
+                            borderColor: '#ffffff'
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                position: 'bottom',
+                                labels: {
+                                    padding: 20,
+                                    usePointStyle: true,
+                                    font: {
+                                        size: 12,
+                                        family: "'Segoe UI', system-ui, sans-serif"
+                                    }
+                                }
+                            },
+                            tooltip: {
+                                callbacks: {
+                                    label: function(context) {
+                                        const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                        const percentage = ((context.parsed / total) * 100).toFixed(1);
+                                        return `${context.label}: ${context.parsed} (${percentage}%)`;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+
+            if (priorityBarCtx) {
+                new Chart(priorityBarCtx, {
+                    type: 'bar',
+                    data: {
+                        labels: {{ chart_data.priority_bar.labels|safe }},
+                        datasets: [{
+                            label: 'Incidents',
+                            data: {{ chart_data.priority_bar.data|safe }},
+                            backgroundColor: {{ chart_data.priority_bar.colors|safe }},
+                            borderRadius: 6,
+                            borderSkipped: false
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                display: false
+                            },
+                            tooltip: {
+                                callbacks: {
+                                    label: function(context) {
+                                        return `${context.parsed.y} incidents`;
+                                    }
+                                }
+                            }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                ticks: {
+                                    stepSize: 1,
+                                    font: {
+                                        size: 11
+                                    }
+                                },
+                                grid: {
+                                    color: '#f1f5f9'
+                                }
+                            },
+                            x: {
+                                grid: {
+                                    display: false
+                                },
+                                ticks: {
+                                    font: {
+                                        size: 11
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+</html>

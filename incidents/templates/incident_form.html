@@ -1,0 +1,111 @@
+{% extends 'base_app.html' %}
+
+{% block title %}{{ page_title }} | Smart Incident Management System{% endblock %}
+{% block nav_incidents %}active{% endblock %}
+{% block page_heading %}{{ page_title }}{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="dashboard-card">
+            <div class="card-header">
+                <span><i class="bi bi-{% if incident %}pencil-square{% else %}plus-circle{% endif %} me-2"></i>{{ page_title }}</span>
+                <a href="{% url 'incident_list' %}" class="btn btn-sm btn-outline-secondary">
+                    <i class="bi bi-arrow-left me-1"></i> Back to List
+                </a>
+            </div>
+            <div class="card-body">
+                <form method="post" novalidate>
+                    {% csrf_token %}
+
+                    {% if form.non_field_errors %}
+                    <div class="alert alert-danger">
+                        {{ form.non_field_errors }}
+                    </div>
+                    {% endif %}
+
+                    <div class="mb-3">
+                        <label for="{{ form.title.id_for_label }}" class="form-label">Title</label>
+                        {{ form.title }}
+                        {% if form.title.errors %}
+                        <div class="text-danger small mt-1">{{ form.title.errors }}</div>
+                        {% endif %}
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="{{ form.description.id_for_label }}" class="form-label">Description</label>
+                        {{ form.description }}
+                        {% if form.description.errors %}
+                        <div class="text-danger small mt-1">{{ form.description.errors }}</div>
+                        {% endif %}
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="{{ form.priority.id_for_label }}" class="form-label">Priority</label>
+                            {{ form.priority }}
+                            {% if form.priority.errors %}
+                            <div class="text-danger small mt-1">{{ form.priority.errors }}</div>
+                            {% endif %}
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="{{ form.status.id_for_label }}" class="form-label">Status</label>
+                            {{ form.status }}
+                            {% if form.status.errors %}
+                            <div class="text-danger small mt-1">{{ form.status.errors }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        <label for="{{ form.assigned_engineer.id_for_label }}" class="form-label">Assigned Engineer</label>
+                        {{ form.assigned_engineer }}
+                        {% if form.assigned_engineer.errors %}
+                        <div class="text-danger small mt-1">{{ form.assigned_engineer.errors }}</div>
+                        {% endif %}
+                    </div>
+
+                    <div class="mb-4">
+                        <label for="{{ form.resolution_notes.id_for_label }}" class="form-label">Resolution Notes</label>
+                        {{ form.resolution_notes }}
+                        {% if form.resolution_notes.errors %}
+                        <div class="text-danger small mt-1">{{ form.resolution_notes.errors }}</div>
+                        {% endif %}
+                        <div class="form-text">Add notes about how the incident was resolved (optional)</div>
+                    </div>
+
+                    {% if incident %}
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <label class="form-label">Incident ID</label>
+                            <input type="text" class="form-control" value="{{ incident.incident_id }}" readonly disabled>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Created Date</label>
+                            <input type="text" class="form-control" value="{{ incident.created_date|date:'M d, Y H:i' }}" readonly disabled>
+                        </div>
+                    </div>
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <label class="form-label">Last Updated</label>
+                            <input type="text" class="form-control" value="{{ incident.updated_at|date:'M d, Y H:i' }}" readonly disabled>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">SLA Status</label>
+                            <input type="text" class="form-control" value="{{ incident.sla_status_display }}" readonly disabled>
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-check-lg me-1"></i> {{ submit_label }}
+                        </button>
+                        <a href="{% url 'incident_list' %}" class="btn btn-outline-secondary">Cancel</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

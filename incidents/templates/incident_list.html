@@ -1,0 +1,128 @@
+{% extends 'base_app.html' %}
+
+{% block title %}Incidents | Smart Incident Management System{% endblock %}
+{% block nav_incidents %}active{% endblock %}
+{% block page_heading %}Incidents{% endblock %}
+
+{% block top_actions %}
+<a href="{% url 'incident_create' %}" class="btn btn-primary btn-sm">
+    <i class="bi bi-plus-lg me-1"></i> Add Incident
+</a>
+{% endblock %}
+
+{% block content %}
+<div class="dashboard-card">
+    <div class="card-header">
+        <span><i class="bi bi-list-ul me-2"></i>All Incidents</span>
+        <div class="d-flex gap-2">
+            <button class="btn btn-sm btn-outline-secondary" type="button" data-bs-toggle="collapse" data-bs-target="#filterCollapse">
+                <i class="bi bi-funnel me-1"></i> Filters
+            </button>
+        </div>
+    </div>
+    <div class="card-body p-0">
+        <!-- Filter Section -->
+        <div class="collapse {% if query or status_filter or priority_filter or engineer_filter %}show{% endif %}" id="filterCollapse">
+            <div class="p-3 border-bottom bg-light">
+                <form method="get" class="row g-3">
+                    <div class="col-md-3">
+                        <label class="form-label small fw-medium">Search</label>
+                        <input type="text" name="q" value="{{ query }}" class="form-control form-control-sm" placeholder="Title or description...">
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label small fw-medium">Status</label>
+                        <select name="status" class="form-select form-select-sm">
+                            <option value="">All Statuses</option>
+                            {% for value, label in status_choices %}
+                            <option value="{{ value }}" {% if status_filter == value %}selected{% endif %}>{{ label }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label small fw-medium">Priority</label>
+                        <select name="priority" class="form-select form-select-sm">
+                            <option value="">All Priorities</option>
+                            {% for value, label in priority_choices %}
+                            <option value="{{ value }}" {% if priority_filter == value %}selected{% endif %}>{{ label }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label small fw-medium">Assigned Engineer</label>
+                        <input type="text" name="engineer" value="{{ engineer_filter }}" class="form-control form-control-sm" placeholder="Engineer name...">
+                    </div>
+                    <div class="col-md-2 d-flex align-items-end">
+                        <div class="d-flex gap-2 w-100">
+                            <button type="submit" class="btn btn-primary btn-sm flex-grow-1">
+                                <i class="bi bi-search me-1"></i> Search
+                            </button>
+                            <a href="{% url 'incident_list' %}" class="btn btn-outline-secondary btn-sm">
+                                <i class="bi bi-x-lg"></i>
+                            </a>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+        {% if incidents %}
+        <div class="table-responsive">
+            <table class="table incidents-table mb-0">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Title</th>
+                        <th>Status</th>
+                        <th>Priority</th>
+                        <th>SLA Status</th>
+                        <th>Assigned Engineer</th>
+                        <th>Updated</th>
+                        <th class="text-end">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for incident in incidents %}
+                    <tr>
+                        <td><strong>{{ incident.incident_id }}</strong></td>
+                        <td>{{ incident.title }}</td>
+                        <td>
+                            <span class="badge badge-status badge-{{ incident.status_class }}">
+                                {{ incident.get_status_display }}
+                            </span>
+                        </td>
+                        <td>
+                            <span class="badge badge-status badge-priority-{{ incident.priority_class }}">
+                                {{ incident.get_priority_display }}
+                            </span>
+                        </td>
+                        <td>
+                            <span class="badge bg-{{ incident.sla_status_class }}">
+                                {{ incident.sla_status_display }}
+                            </span>
+                        </td>
+                        <td>{{ incident.assigned_engineer }}</td>
+                        <td class="text-muted small">{{ incident.updated_at|date:"M d, Y H:i" }}</td>
+                        <td class="text-end">
+                            <a href="{% url 'incident_update' incident.pk %}" class="btn btn-sm btn-outline-primary" title="Edit">
+                                <i class="bi bi-pencil"></i>
+                            </a>
+                            <a href="{% url 'incident_delete' incident.pk %}" class="btn btn-sm btn-outline-danger" title="Delete">
+                                <i class="bi bi-trash"></i>
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="text-center py-5">
+            <i class="bi bi-inbox display-4 text-muted"></i>
+            <p class="text-muted mt-3 mb-3">No incidents found.</p>
+            <a href="{% url 'incident_create' %}" class="btn btn-primary">
+                <i class="bi bi-plus-lg me-1"></i> Add Your First Incident
+            </a>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

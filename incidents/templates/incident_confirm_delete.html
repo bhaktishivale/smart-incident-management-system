@@ -1,0 +1,44 @@
+{% extends 'base_app.html' %}
+
+{% block title %}Delete Incident | Smart Incident Management System{% endblock %}
+{% block nav_incidents %}active{% endblock %}
+{% block page_heading %}Delete Incident{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-6">
+        <div class="dashboard-card border-danger">
+            <div class="card-header text-danger">
+                <span><i class="bi bi-exclamation-triangle me-2"></i>Confirm Deletion</span>
+            </div>
+            <div class="card-body">
+                <p class="mb-3">Are you sure you want to delete this incident? This action cannot be undone.</p>
+
+                <div class="bg-light rounded p-3 mb-4">
+                    <h6 class="fw-bold mb-2">{{ incident.title }}</h6>
+                    <p class="text-muted small mb-2">{{ incident.description|truncatewords:30 }}</p>
+                    <div class="d-flex flex-wrap gap-2">
+                        <span class="badge badge-status badge-{{ incident.status_class }}">
+                            {{ incident.get_status_display }}
+                        </span>
+                        <span class="badge badge-status badge-priority-{{ incident.priority_class }}">
+                            {{ incident.get_priority_display }}
+                        </span>
+                        <span class="badge bg-secondary">{{ incident.assigned_engineer }}</span>
+                    </div>
+                </div>
+
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-danger">
+                            <i class="bi bi-trash me-1"></i> Delete Incident
+                        </button>
+                        <a href="{% url 'incident_list' %}" class="btn btn-outline-secondary">Cancel</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,647 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Incident Management System</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-blue: #0d6efd;
+            --dark-blue: #0a58ca;
+            --light-blue: #e7f1ff;
+            --gradient-start: #0d6efd;
+            --gradient-end: #0a58ca;
+        }
+
+        body {
+            font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
+            color: #212529;
+            overflow-x: hidden;
+        }
+
+        /* Navbar */
+        .navbar {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 2px 20px rgba(13, 110, 253, 0.08);
+            padding: 0.75rem 0;
+            transition: all 0.3s ease;
+        }
+
+        .navbar-brand {
+            font-weight: 700;
+            font-size: 1.25rem;
+            color: var(--primary-blue) !important;
+        }
+
+        .navbar-brand i {
+            font-size: 1.5rem;
+            vertical-align: middle;
+            margin-right: 0.35rem;
+        }
+
+        .nav-link {
+            font-weight: 500;
+            color: #495057 !important;
+            padding: 0.5rem 1rem !important;
+            transition: color 0.2s ease;
+        }
+
+        .nav-link:hover,
+        .nav-link.active {
+            color: var(--primary-blue) !important;
+        }
+
+        .btn-nav-login {
+            border: 2px solid var(--primary-blue);
+            color: var(--primary-blue);
+            font-weight: 600;
+            padding: 0.4rem 1.25rem;
+            border-radius: 50px;
+            transition: all 0.3s ease;
+        }
+
+        .btn-nav-login:hover {
+            background: var(--primary-blue);
+            color: #fff;
+        }
+
+        /* Hero */
+        .hero-section {
+            background: linear-gradient(135deg, var(--gradient-start) 0%, var(--gradient-end) 100%);
+            color: #fff;
+            padding: 7rem 0 6rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-section::before {
+            content: "";
+            position: absolute;
+            top: -50%;
+            right: -20%;
+            width: 600px;
+            height: 600px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 50%;
+        }
+
+        .hero-section::after {
+            content: "";
+            position: absolute;
+            bottom: -30%;
+            left: -10%;
+            width: 400px;
+            height: 400px;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 50%;
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .hero-title {
+            font-size: clamp(2rem, 5vw, 3.25rem);
+            font-weight: 800;
+            line-height: 1.2;
+            margin-bottom: 1.25rem;
+        }
+
+        .hero-subtitle {
+            font-size: clamp(1rem, 2.5vw, 1.25rem);
+            opacity: 0.92;
+            max-width: 560px;
+            line-height: 1.7;
+            margin-bottom: 2rem;
+        }
+
+        .btn-hero-primary {
+            background: #fff;
+            color: var(--primary-blue);
+            font-weight: 600;
+            padding: 0.75rem 2rem;
+            border-radius: 50px;
+            border: none;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+        }
+
+        .btn-hero-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+            background: #fff;
+            color: var(--dark-blue);
+        }
+
+        .btn-hero-secondary {
+            background: transparent;
+            color: #fff;
+            font-weight: 600;
+            padding: 0.75rem 2rem;
+            border-radius: 50px;
+            border: 2px solid rgba(255, 255, 255, 0.7);
+            transition: all 0.3s ease;
+        }
+
+        .btn-hero-secondary:hover {
+            background: rgba(255, 255, 255, 0.15);
+            border-color: #fff;
+            color: #fff;
+            transform: translateY(-2px);
+        }
+
+        .hero-badge {
+            display: inline-block;
+            background: rgba(255, 255, 255, 0.15);
+            padding: 0.35rem 1rem;
+            border-radius: 50px;
+            font-size: 0.875rem;
+            margin-bottom: 1.25rem;
+            backdrop-filter: blur(5px);
+        }
+
+        /* Features */
+        .features-section {
+            padding: 5rem 0;
+            background: #fff;
+        }
+
+        .section-heading {
+            font-weight: 700;
+            color: #212529;
+            margin-bottom: 0.75rem;
+        }
+
+        .section-subheading {
+            color: #6c757d;
+            max-width: 540px;
+            margin: 0 auto 3rem;
+        }
+
+        .feature-card {
+            border: none;
+            border-radius: 16px;
+            padding: 2rem 1.75rem;
+            height: 100%;
+            background: #fff;
+            box-shadow: 0 4px 24px rgba(13, 110, 253, 0.08);
+            transition: all 0.35s ease;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 12px 40px rgba(13, 110, 253, 0.15);
+        }
+
+        .feature-icon {
+            width: 64px;
+            height: 64px;
+            background: var(--light-blue);
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1.25rem;
+        }
+
+        .feature-icon i {
+            font-size: 1.75rem;
+            color: var(--primary-blue);
+        }
+
+        .feature-card h5 {
+            font-weight: 700;
+            margin-bottom: 0.75rem;
+        }
+
+        .feature-card p {
+            color: #6c757d;
+            margin-bottom: 0;
+            line-height: 1.6;
+        }
+
+        /* Statistics */
+        .stats-section {
+            padding: 5rem 0;
+            background: var(--light-blue);
+        }
+
+        .stat-card {
+            background: #fff;
+            border-radius: 16px;
+            padding: 2rem 1.5rem;
+            text-align: center;
+            box-shadow: 0 4px 20px rgba(13, 110, 253, 0.08);
+            transition: all 0.4s ease;
+            opacity: 0;
+            transform: translateY(30px);
+        }
+
+        .stat-card.animate-in {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 35px rgba(13, 110, 253, 0.15);
+        }
+
+        .stat-card.animate-in:hover {
+            transform: translateY(-5px);
+        }
+
+        .stat-icon {
+            width: 56px;
+            height: 56px;
+            background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1rem;
+        }
+
+        .stat-icon i {
+            font-size: 1.5rem;
+            color: #fff;
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: var(--primary-blue);
+            line-height: 1;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            color: #6c757d;
+            font-weight: 500;
+            font-size: 0.95rem;
+            margin-bottom: 0;
+        }
+
+        /* Footer */
+        .footer {
+            background: #0a1628;
+            color: rgba(255, 255, 255, 0.75);
+            padding: 3.5rem 0 1.5rem;
+        }
+
+        .footer-brand {
+            font-weight: 700;
+            font-size: 1.25rem;
+            color: #fff;
+            margin-bottom: 1rem;
+        }
+
+        .footer-brand i {
+            color: var(--primary-blue);
+            margin-right: 0.35rem;
+        }
+
+        .footer-links h6 {
+            color: #fff;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+
+        .footer-links a {
+            color: rgba(255, 255, 255, 0.65);
+            text-decoration: none;
+            display: block;
+            margin-bottom: 0.5rem;
+            transition: color 0.2s ease;
+        }
+
+        .footer-links a:hover {
+            color: #fff;
+        }
+
+        .footer-bottom {
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            margin-top: 2.5rem;
+            padding-top: 1.5rem;
+            text-align: center;
+            font-size: 0.875rem;
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        .social-link {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 50%;
+            color: rgba(255, 255, 255, 0.75);
+            text-decoration: none;
+            transition: all 0.3s ease;
+            margin-right: 0.5rem;
+        }
+
+        .social-link:hover {
+            background: var(--primary-blue);
+            color: #fff;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg fixed-top">
+        <div class="container">
+            <a class="navbar-brand" href="{% url 'home' %}">
+                <i class="bi bi-shield-check"></i>SIMS
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNavbar" aria-controls="mainNavbar" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="mainNavbar">
+                <ul class="navbar-nav ms-auto align-items-lg-center gap-lg-1">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="{% url 'home' %}">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'dashboard' %}">Dashboard</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'incident_list' %}">Incidents</a>
+                    </li>
+                    {% if user.is_authenticated %}
+                    <li class="nav-item">
+                        <span class="nav-link text-muted">
+                            <i class="bi bi-person-circle me-1"></i>{{ user.username }}
+                        </span>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link btn-nav-login ms-lg-2" href="{% url 'logout' %}">
+                            <i class="bi bi-box-arrow-right me-1"></i>Logout
+                        </a>
+                    </li>
+                    {% else %}
+                    <li class="nav-item">
+                        <a class="nav-link btn-nav-login ms-lg-2" href="{% url 'login' %}">
+                            <i class="bi bi-box-arrow-in-right me-1"></i>Login
+                        </a>
+                    </li>
+                    {% endif %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="#contact">Contact</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero-section">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-lg-8 hero-content">
+                    <span class="hero-badge">
+                        <i class="bi bi-stars me-1"></i> AI-Powered Production Support
+                    </span>
+                    <h1 class="hero-title">Smart Incident Management System</h1>
+                    <p class="hero-subtitle">
+                        AI-powered platform for managing production incidents efficiently.
+                    </p>
+                    <div class="d-flex flex-wrap gap-3">
+                        <a href="#features" class="btn btn-hero-primary">Get Started</a>
+                        <a href="{% url 'dashboard' %}" class="btn btn-hero-secondary">View Dashboard</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="features-section" id="features">
+        <div class="container">
+            <div class="text-center">
+                <h2 class="section-heading">Powerful Features</h2>
+                <p class="section-subheading">
+                    Everything you need to detect, track, and resolve production incidents with confidence.
+                </p>
+            </div>
+            <div class="row g-4">
+                <div class="col-md-4">
+                    <div class="card feature-card">
+                        <div class="feature-icon">
+                            <i class="bi bi-bug-fill"></i>
+                        </div>
+                        <h5>Incident Tracking</h5>
+                        <p>
+                            Log, categorize, and monitor incidents in real time with full audit trails
+                            and intelligent priority assignment.
+                        </p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card feature-card">
+                        <div class="feature-icon">
+                            <i class="bi bi-database-fill"></i>
+                        </div>
+                        <h5>SQL Database Management</h5>
+                        <p>
+                            Run diagnostics, inspect query performance, and manage database health
+                            directly from a unified control panel.
+                        </p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card feature-card">
+                        <div class="feature-icon">
+                            <i class="bi bi-activity"></i>
+                        </div>
+                        <h5>Production Monitoring</h5>
+                        <p>
+                            Stay ahead of outages with live system metrics, automated alerts,
+                            and proactive health dashboards.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Statistics Section -->
+    <section class="stats-section" id="dashboard">
+        <div class="container">
+            <div class="text-center mb-5">
+                <h2 class="section-heading">Live Statistics</h2>
+                <p class="section-subheading">
+                    Real-time overview of your incident management pipeline.
+                </p>
+            </div>
+            <div class="row g-4">
+                <div class="col-6 col-lg-3">
+                    <div class="stat-card" data-delay="0">
+                        <div class="stat-icon">
+                            <i class="bi bi-collection-fill"></i>
+                        </div>
+                        <div class="stat-number" data-target="1284">0</div>
+                        <p class="stat-label">Total Incidents</p>
+                    </div>
+                </div>
+                <div class="col-6 col-lg-3">
+                    <div class="stat-card" data-delay="100">
+                        <div class="stat-icon">
+                            <i class="bi bi-exclamation-circle-fill"></i>
+                        </div>
+                        <div class="stat-number" data-target="47">0</div>
+                        <p class="stat-label">Open Issues</p>
+                    </div>
+                </div>
+                <div class="col-6 col-lg-3">
+                    <div class="stat-card" data-delay="200">
+                        <div class="stat-icon">
+                            <i class="bi bi-lightning-charge-fill"></i>
+                        </div>
+                        <div class="stat-number" data-target="12">0</div>
+                        <p class="stat-label">Critical Issues</p>
+                    </div>
+                </div>
+                <div class="col-6 col-lg-3">
+                    <div class="stat-card" data-delay="300">
+                        <div class="stat-icon">
+                            <i class="bi bi-check-circle-fill"></i>
+                        </div>
+                        <div class="stat-number" data-target="1225">0</div>
+                        <p class="stat-label">Resolved</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer" id="contact">
+        <div class="container">
+            <div class="row g-4">
+                <div class="col-lg-4">
+                    <div class="footer-brand">
+                        <i class="bi bi-shield-check"></i>Smart Incident Management System
+                    </div>
+                    <p class="mb-3">
+                        Empowering production support teams with AI-driven incident management,
+                        monitoring, and resolution tools.
+                    </p>
+                    <div>
+                        <a href="#" class="social-link" aria-label="LinkedIn"><i class="bi bi-linkedin"></i></a>
+                        <a href="#" class="social-link" aria-label="GitHub"><i class="bi bi-github"></i></a>
+                        <a href="#" class="social-link" aria-label="Twitter"><i class="bi bi-twitter-x"></i></a>
+                    </div>
+                </div>
+                <div class="col-6 col-lg-2">
+                    <div class="footer-links">
+                        <h6>Product</h6>
+                        <a href="#features">Features</a>
+                        <a href="#dashboard">Dashboard</a>
+                        <a href="#contact">Pricing</a>
+                    </div>
+                </div>
+                <div class="col-6 col-lg-2">
+                    <div class="footer-links">
+                        <h6>Company</h6>
+                        <a href="#contact">About</a>
+                        <a href="#contact">Careers</a>
+                        <a href="#contact">Blog</a>
+                    </div>
+                </div>
+                <div class="col-lg-4">
+                    <div class="footer-links">
+                        <h6>Contact</h6>
+                        <a href="mailto:support@simssystem.com">
+                            <i class="bi bi-envelope me-1"></i> support@simssystem.com
+                        </a>
+                        <a href="tel:+18001234567">
+                            <i class="bi bi-telephone me-1"></i> +1 (800) 123-4567
+                        </a>
+                        <a href="#contact">
+                            <i class="bi bi-geo-alt me-1"></i> San Francisco, CA
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p class="mb-0">&copy; 2026 Smart Incident Management System. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const statCards = document.querySelectorAll(".stat-card");
+            let animated = false;
+
+            function animateCounter(element, target, duration) {
+                const start = 0;
+                const startTime = performance.now();
+
+                function update(currentTime) {
+                    const elapsed = currentTime - startTime;
+                    const progress = Math.min(elapsed / duration, 1);
+                    const eased = 1 - Math.pow(1 - progress, 3);
+                    const current = Math.floor(start + (target - start) * eased);
+                    element.textContent = current.toLocaleString();
+
+                    if (progress < 1) {
+                        requestAnimationFrame(update);
+                    } else {
+                        element.textContent = target.toLocaleString();
+                    }
+                }
+
+                requestAnimationFrame(update);
+            }
+
+            function triggerAnimations() {
+                if (animated) return;
+
+                statCards.forEach(function (card) {
+                    const rect = card.getBoundingClientRect();
+                    if (rect.top < window.innerHeight - 80) {
+                        animated = true;
+
+                        statCards.forEach(function (c) {
+                            const delay = parseInt(c.dataset.delay || "0", 10);
+                            setTimeout(function () {
+                                c.classList.add("animate-in");
+                                const numberEl = c.querySelector(".stat-number");
+                                const target = parseInt(numberEl.dataset.target, 10);
+                                animateCounter(numberEl, target, 1800);
+                            }, delay);
+                        });
+                    }
+                });
+            }
+
+            window.addEventListener("scroll", triggerAnimations);
+            triggerAnimations();
+
+            document.querySelectorAll('a[href^="#"]').forEach(function (anchor) {
+                anchor.addEventListener("click", function (e) {
+                    const targetId = this.getAttribute("href");
+                    if (targetId === "#") return;
+
+                    const target = document.querySelector(targetId);
+                    if (target) {
+                        e.preventDefault();
+                        const navHeight = document.querySelector(".navbar").offsetHeight;
+                        const top = target.getBoundingClientRect().top + window.scrollY - navHeight;
+                        window.scrollTo({ top: top, behavior: "smooth" });
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>
